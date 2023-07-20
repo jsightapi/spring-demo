@@ -1,3 +1,5 @@
+package io.jsight.spring;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,9 +19,11 @@ public class JSightFilter implements Filter {
         throws IOException, ServletException 
     {
         Long start = System.currentTimeMillis();
-        logger.info( "remote host {}" , request.getRemoteHost() );
+        logger.error( "remote host {}" , request.getRemoteHost() );
+        System.out.println("I AM FILTER!!!");
         filterchain.doFilter(request, response);
-        logger.info( "response in {}ms",
+        System.out.println("I AM FILTER!!!");
+        logger.error( "response in {}ms",
                 System.currentTimeMillis() - start );
     }
 

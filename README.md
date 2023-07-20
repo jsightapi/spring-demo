@@ -25,3 +25,6 @@ Clearing cache reduces performance dramatically.
 3. Copy three JSight java adapter source files into `./src/main/java/io/jsight` folder:
    `JSight.java`, `ErrorPosition.java`, `ValidationError.java`.
 4. Put JSight API specification file (e. g. `my-api-spec.jst`) into `./src/main/resources` folder.
+5. Add `"io.jsight"` to `@ComponentScan` annotation in your main application class. (E. g.
+   `@ComponentScan(basePackages = {"com.example.demo", "io.jsight"})`). This will tell Spring Boot
+   to scan components in `io.jsight` namespace.

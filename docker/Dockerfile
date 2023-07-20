@@ -1,4 +1,4 @@
-﻿FROM maven:latest 
+﻿FROM maven:3-amazoncorretto-17
 WORKDIR /app
 # The next lines are the fake test run which allows maven to download all 
 # its dependencies and save them in the docker image layer.
