@@ -10,6 +10,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 import org.springframework.http.server.ServletServerHttpResponse;
+import org.springframework.http.HttpStatus;
 import java.io.IOException;
 import java.io.File;
 import io.jsight.*;
@@ -30,12 +31,11 @@ public class JSightFilter implements Filter {
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain filterchain) 
         throws IOException, ServletException 
     {
-        CachedHttpServletRequest request = new CachedHttpServletRequest((HttpServletRequest) req);
-        ContentCachingResponseWrapper response = new ContentCachingResponseWrapper((HttpServletResponse) resp);
-
-        System.out.println("=====================");        
-        Long start = System.currentTimeMillis();
- 
+        HttpServletResponse           servletResponse = (HttpServletResponse) resp;
+        CachedHttpServletRequest      request  = new CachedHttpServletRequest((HttpServletRequest ) req );
+        ContentCachingResponseWrapper response = new ContentCachingResponseWrapper(servletResponse);
+        
+        // validate request
         ValidationError error = JSight.ValidateHttpRequest(
             this.apiSpecPath, 
             request.getMethod(),
@@ -46,10 +46,16 @@ public class JSightFilter implements Filter {
 
         if( error != null ) {
             logger.error( "JSight validation error: {}", error.toJSON() );
+            servletResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            servletResponse.setHeader("Content-Type", "application/json");
+            servletResponse.getWriter().write(error.toJSON());
+            return;
         }
 
+        // make job
         filterchain.doFilter(request, response);
-        
+
+        // validate response
         error = JSight.ValidateHttpResponse(
             this.apiSpecPath, 
             request.getMethod(),
@@ -60,14 +66,17 @@ public class JSightFilter implements Filter {
         );
 
         if( error != null ) {
-            logger.error( "JSight validation error: {}", error.toJSON() );
+            String errorStr = error.toJSON();
+            logger.error( "JSight validation error:\n{}", errorStr );
+            servletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            servletResponse.setHeader("Content-Type", "application/json");
+            servletResponse.setContentLength(errorStr.length());
+            servletResponse.getOutputStream().write(errorStr.getBytes());
+            return;
+            // throw new ServletException(error.toJSON()); // as an option
         }
 
         response.copyBodyToResponse();
-
-        logger.info( "response in {}ms",
-            System.currentTimeMillis() - start );
-
     }
 
     @Override
