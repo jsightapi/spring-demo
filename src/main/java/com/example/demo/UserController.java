@@ -12,6 +12,6 @@ public class UserController {
 	@PostMapping("/users")
 	public String newUser(@RequestBody User newUser) {
 		System.out.printf("New User: %s\n", newUser);
-		return "OK";
+		return "\"OK\"";
 	}
 }

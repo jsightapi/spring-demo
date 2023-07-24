@@ -34,6 +34,10 @@ public class CachedHttpServletRequest extends HttpServletRequestWrapper {
         return new ServletServerHttpRequest(this).getHeaders();
     }
 
+    public String getUri() {
+        return this.getRequestURI() + ( (this.getQueryString() == null ) ? "" : ("?" + this.getQueryString()));
+    }
+
     @Override
     public ServletInputStream getInputStream() {
         return new CachedServletInputStream(this.cachedBody);

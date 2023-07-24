@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.ContentCachingResponseWrapper;
+import org.springframework.http.server.ServletServerHttpResponse;
 import java.io.IOException;
 import java.io.File;
 import io.jsight.*;
@@ -29,17 +31,15 @@ public class JSightFilter implements Filter {
         throws IOException, ServletException 
     {
         CachedHttpServletRequest request = new CachedHttpServletRequest((HttpServletRequest) req);
-        HttpServletResponse response = (HttpServletResponse) resp;
+        ContentCachingResponseWrapper response = new ContentCachingResponseWrapper((HttpServletResponse) resp);
 
         System.out.println("=====================");        
         Long start = System.currentTimeMillis();
-        String requestPath = request.getRequestURI() 
-            + ( (request.getQueryString() == null ) ? "" : ("?" + request.getQueryString()));
  
         ValidationError error = JSight.ValidateHttpRequest(
             this.apiSpecPath, 
             request.getMethod(),
-            requestPath,
+            request.getUri(),
             request.getHeaders(),
             request.getCachedBody()
         );
@@ -50,8 +50,24 @@ public class JSightFilter implements Filter {
 
         filterchain.doFilter(request, response);
         
+        error = JSight.ValidateHttpResponse(
+            this.apiSpecPath, 
+            request.getMethod(),
+            request.getUri(),
+            response.getStatus(),
+            new ServletServerHttpResponse(response).getHeaders(),
+            response.getContentAsByteArray()
+        );
+
+        if( error != null ) {
+            logger.error( "JSight validation error: {}", error.toJSON() );
+        }
+
+        response.copyBodyToResponse();
+
         logger.info( "response in {}ms",
             System.currentTimeMillis() - start );
+
     }
 
     @Override
