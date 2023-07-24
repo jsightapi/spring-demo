@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.io.File;
 import io.jsight.*;
+import io.jsight.spring.*;
 
 @Component
 @Order(1)
@@ -27,7 +28,7 @@ public class JSightFilter implements Filter {
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain filterchain) 
         throws IOException, ServletException 
     {
-        HttpServletRequest   request = (HttpServletRequest ) req;
+        CachedHttpServletRequest request = new CachedHttpServletRequest((HttpServletRequest) req);
         HttpServletResponse response = (HttpServletResponse) resp;
 
         System.out.println("=====================");        
@@ -39,8 +40,8 @@ public class JSightFilter implements Filter {
             this.apiSpecPath, 
             request.getMethod(),
             requestPath,
-            null, // Map<String,List<String>> requestHeaders, 
-            null  // byte[] requestBody
+            request.getHeaders(),
+            request.getCachedBody()
         );
 
         if( error != null ) {
@@ -50,7 +51,7 @@ public class JSightFilter implements Filter {
         filterchain.doFilter(request, response);
         
         logger.info( "response in {}ms",
-                System.currentTimeMillis() - start );
+            System.currentTimeMillis() - start );
     }
 
     @Override

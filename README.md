@@ -6,7 +6,7 @@
    `./src/main/resources/my-api-spec.jst`. 
    Examples:  
    - Good request:  
-     `curl --location 'http://localhost:8080/users' --header "Content-Type: application/json" --data '{"id": 1, "login": "l"}'`.  
+     `curl --location 'http://localhost:8080/users' --header "Content-Type: application/json" --data '{"id": 1, "login": "john"}'`.  
      You must get `OK` in response. 
    - Bad request:  
      `curl --location 'http://localhost:8080/users' --header "Content-Type: application/json" --data '{"id": 1}'`.  
