@@ -20,7 +20,7 @@ import io.jsight.spring.*;
 @Order(1)
 public class JSightFilter implements Filter {
 
-    private final String apiSpecPath = defineSpecAbsolutePath("my-api-spec.jst");
+    private final String apiSpecPath = "/app/mock/server.jst"; // MOCK CHANGE
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     static {
@@ -34,7 +34,14 @@ public class JSightFilter implements Filter {
         HttpServletResponse           servletResponse = (HttpServletResponse) resp;
         CachedHttpServletRequest      request  = new CachedHttpServletRequest((HttpServletRequest ) req );
         ContentCachingResponseWrapper response = new ContentCachingResponseWrapper(servletResponse);
-        
+
+        // MOCK CHANGE: skip validation for `GET /_stat` statistic request
+        if( "GET".equals(request.getMethod()) && "/_stat".equals(request.getUri())) {
+            filterchain.doFilter(request, response);
+            response.copyBodyToResponse();
+            return;
+        }
+
         // validate request
         ValidationError error = JSight.ValidateHttpRequest(
             this.apiSpecPath, 
