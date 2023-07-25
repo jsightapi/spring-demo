@@ -4,7 +4,12 @@ POST /users // Create a user
   Request 
     @user
   200
-    "OK"
+    Headers
+      {
+        "x-header-b": "any string"
+      }
+    Body
+      "OK"
 
 TYPE @user
 {
