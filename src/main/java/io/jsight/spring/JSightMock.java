@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.charset.StandardCharsets;
 import java.lang.Runtime;
 import io.jsight.*;
 import io.jsight.spring.*;
@@ -42,13 +43,15 @@ public class JSightMock implements Filter {
             return;    
         }
 
-        String responseBody    = Files.readString(Paths.get(mockPath + "response_body"));
-        String responseCode    = Files.readString(Paths.get(mockPath + "response_code"));
-        String responseHeaders = Files.readString(Paths.get(mockPath + "response_headers"));
+        String responseBody    = Files.readString(Paths.get(mockPath + "response_body")   , StandardCharsets.UTF_8);
+        String responseCode    = Files.readString(Paths.get(mockPath + "response_code")   , StandardCharsets.UTF_8);
+        String responseHeaders = Files.readString(Paths.get(mockPath + "response_headers"), StandardCharsets.UTF_8);
+
+        System.out.println(responseBody);
 
         initHttpHeaders(response, responseHeaders);
         response.setStatus(Integer.parseInt(responseCode));
-        response.getWriter().write(responseBody);
+        response.getOutputStream().write(responseBody.getBytes("UTF-8"));
     }
 
     @Override
