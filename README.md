@@ -10,3 +10,12 @@
 4. Open in browser `http://localhost:8080/_stat` to get pid and statistical info from `libjsight.so`
    library (`curl http://localhost:8080/_stat`);
    Check memory in `/proc/[pid]/statm` file.
+5. Run auto tests using `https://github.com/jsightapi/validation-tests-http` repo using this
+   command:
+
+```bash
+MOCK_SERVER_URL=http://localhost:8080 \
+SPEC_EXCHANGE_DIR=/mnt/wind/opt/jsight/spring-demo/mock \
+RESPONSE_EXCHANGE_DIR=/mnt/wind/opt/jsight/spring-demo/mock \
+go test -v -timeout 99999s -run Test_Repo_Run
+```

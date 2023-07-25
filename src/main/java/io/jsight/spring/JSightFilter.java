@@ -42,6 +42,8 @@ public class JSightFilter implements Filter {
             return;
         }
 
+        JSight.ClearCache(); // MOCK CHANGE
+
         // validate request
         ValidationError error = JSight.ValidateHttpRequest(
             this.apiSpecPath, 
