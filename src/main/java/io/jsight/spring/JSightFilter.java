@@ -9,8 +9,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.ContentCachingResponseWrapper;
-import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.http.HttpStatus;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import java.io.IOException;
 import java.io.File;
 import io.jsight.*;
@@ -61,7 +64,7 @@ public class JSightFilter implements Filter {
             request.getMethod(),
             request.getUri(),
             response.getStatus(),
-            new ServletServerHttpResponse(response).getHeaders(),
+            getResponseHeaders(response),
             response.getContentAsByteArray()
         );
 
@@ -91,5 +94,18 @@ public class JSightFilter implements Filter {
                 .getFile()
             ).getAbsolutePath();
         return specPath;
+    }
+
+    private static Map<String, List<String>> getResponseHeaders(HttpServletResponse response) {
+        Map<String, List<String>> retHeaders = new HashMap<String, List<String>>();
+        for( String h : response.getHeaderNames() ) {
+            for( String v : response.getHeaders(h) ) {
+                if( ! retHeaders.keySet().contains(h) ) {
+                    retHeaders.put(h, new ArrayList<String>());
+                }
+                retHeaders.get(h).add(v);
+            }
+        }
+        return retHeaders;
     }
 }
