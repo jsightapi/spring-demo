@@ -35,22 +35,32 @@ public class JSightMock implements Filter {
         HttpServletRequest  request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) resp;
 
+        String responseBody = "";
+
         if( "GET".equals(request.getMethod()) && "/_stat".equals(request.getRequestURI())) {
-            String stat = String.format("%s\n## Java\n\n%s", JSight.Stat(), memInfo());
-            response.setHeader("Content-Type", "text/plain");
-            response.setStatus(200);
-            response.getWriter().write(stat);
-            return;    
+            responseBody = String.format("%s\n## Java\n\n%s", JSight.Stat(), memInfo());
         }
 
-        String responseBody    = Files.readString(Paths.get(mockPath + "response_body")   , StandardCharsets.UTF_8);
-        String responseCode    = Files.readString(Paths.get(mockPath + "response_code")   , StandardCharsets.UTF_8);
-        String responseHeaders = Files.readString(Paths.get(mockPath + "response_headers"), StandardCharsets.UTF_8);
+        if( "POST".equals(request.getMethod()) && "/check-jdoc-exchange-200k".equals(request.getRequestURI())) {
+            responseBody = Files.readString(Paths.get(mockPath + "test-responses/jdoc-exchange-response-200k.json"), StandardCharsets.UTF_8);
+        }
+        
+        if( "POST".equals(request.getMethod()) && "/check-jdoc-exchange-1m".equals(request.getRequestURI())) {
+            responseBody = Files.readString(Paths.get(mockPath + "test-responses/jdoc-exchange-response-1m.json"), StandardCharsets.UTF_8);
+        }
 
-        System.out.println(responseBody);
+        if( "PUT".equals(request.getMethod()) && "/dogs/123".equals(request.getRequestURI())) {
+            responseBody = Files.readString(Paths.get(mockPath + "test-responses/dog-response-500b.json"), StandardCharsets.UTF_8);
+        }
 
-        initHttpHeaders(response, responseHeaders);
-        response.setStatus(Integer.parseInt(responseCode));
+        if( "POST".equals(request.getMethod()) && "/cats".equals(request.getRequestURI())) {
+            responseBody = Files.readString(Paths.get(mockPath + "test-responses/cat-response-1k.json"), StandardCharsets.UTF_8);
+        }
+        
+        if( "GET".equals(request.getMethod()) && "/hello-world".equals(request.getRequestURI())) {
+            responseBody = "\"Hello, World!\"";
+        }
+
         response.getOutputStream().write(responseBody.getBytes("UTF-8"));
     }
 

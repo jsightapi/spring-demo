@@ -1,19 +1,20 @@
 JSIGHT 0.3
 
-POST /users // Create a user
-  Request 
-    @user
-  200
-    Headers
-      {
-        "x-header-b": "any string"
-      }
-    Body
-      "OK"
+INCLUDE jsight-server-api.jst
+INCLUDE all-features-test.jst
 
-TYPE @user
-{
-  "id": 1,
-  "login": "tom",
-  "name": "John" // {optional: true}
-}
+GET /hello-world
+  200
+    "Hello, world!"
+
+POST /check-jdoc-exchange-200k
+  Request
+    @jdocExchange
+  200
+    @jdocExchange
+
+POST /check-jdoc-exchange-1m
+  Request
+    @jdocExchange
+  200
+    @jdocExchange
