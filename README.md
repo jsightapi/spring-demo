@@ -8,6 +8,7 @@
 4. Open in browser http://localhost:8080/_stat to get pid and statistical info from `libjsight.so` library (`curl http://localhost:8080/_stat`).
 5. Go into test stand docker: `sudo docker exec -it jsight_spring_boot bash`  
    Check memory in `/proc/[pid]/statm` file, parameter `resident` (2nd figure).
+   Loop this using e. g. the following command: `while true; do cat /proc/53/statm; sleep 1; done`.
    Explanation of figures in this file:
    - `size` - total program size (pages) (same as VmSize in status)
    - `resident` - size of memory portions (pages) (same as VmRSS in status)
