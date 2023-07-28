@@ -28,7 +28,6 @@ public class ValidationError {
         this.trace      = trace;             
     }
 
-
     public String getReportedBy() {
         return this.reportedBy;
     }
@@ -50,7 +49,6 @@ public class ValidationError {
     public String[] getTrace(){
         return this.trace;
     }
-
     public String toJSON() {
         return JSight.SerializeError("json", this);
     }
